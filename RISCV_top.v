@@ -1,6 +1,8 @@
 module riscv_top(
     input clk,
-    input rst
+    input rst,
+    output [31:0] pc_out,
+    output [31:0] alu_out
 );
 
     wire [31:0] pc, next_pc, instr;
@@ -8,19 +10,20 @@ module riscv_top(
     wire [6:0]  opcode, funct7;
     wire [4:0]  rd, rs1, rs2;
     wire [2:0]  funct3;
-
-    wire is_add,  is_sub,  is_and,  is_or,   is_xor;
-    wire is_sll,  is_srl,  is_sra,  is_slt,  is_sltu;
-    wire is_addi, is_andi, is_ori,  is_xori;
+    wire is_add, is_sub, is_and, is_or, is_xor;
+    wire is_sll, is_srl, is_sra, is_slt, is_sltu;
+    wire is_addi, is_andi, is_ori, is_xori;
     wire is_slli, is_srli, is_srai, is_slti, is_sltiu;
-    wire is_beq,  is_bne,  is_blt,  is_bge,  is_bltu, is_bgeu;
-    wire is_jal,  is_jalr, is_lui,  is_auipc;
-    wire is_lw,   is_sw;
-
+    wire is_beq, is_bne, is_blt, is_bge, is_bltu, is_bgeu;
+    wire is_jal, is_jalr, is_lui, is_auipc;
+    wire is_lw, is_sw;
     wire branch_taken;
     wire [31:0] branch_target;
     wire [31:0] jalr_target;
     wire reg_we;
+
+    assign pc_out = pc;
+    assign alu_out = alu_result;
 
     assign branch_taken = (is_beq  & alu_result[0]) |
                           (is_bne  & alu_result[0]) |
