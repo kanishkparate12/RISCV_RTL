@@ -1,12 +1,18 @@
 module riscv_top(
     input clk,
     input rst,
+
+    input [31:0] instr,
     output [31:0] pc_out,
-    output [31:0] alu_out
+	
+    output dmem_we,
+    output [31:0] dmem_addr,
+    output [31:0] dmem_wd,
+    input [31:0] dmem_rd
 );
 
-    wire [31:0] pc, next_pc, instr;
-    wire [31:0] rd1, rd2, alu_result, imm, wb_data, dmem_out;
+    wire [31:0] pc, next_pc, alu_out;
+    wire [31:0] rd1, rd2, alu_result, imm, wb_data;
     wire [6:0]  opcode, funct7;
     wire [4:0]  rd, rs1, rs2;
     wire [2:0]  funct3;
@@ -23,7 +29,6 @@ module riscv_top(
     wire reg_we;
 
     assign pc_out = pc;
-    assign alu_out = alu_result;
 
     assign branch_taken = (is_beq  & alu_result[0]) |
                           (is_bne  & alu_result[0]) |
@@ -46,18 +51,17 @@ module riscv_top(
                     is_slli| is_srli | is_srai | is_slti | is_sltiu|
                     is_lui | is_auipc| is_jal  | is_jalr | is_lw;
 
-    assign wb_data = is_lw ? dmem_out : alu_result;
+    assign wb_data = is_lw ? dmem_rd : alu_result;
+
+    assign dmem_we = is_sw;
+    assign dmem_addr = alu_result;
+    assign dmem_wd = rd2;
 
     pc u_pc (
         .clk(clk),
         .rst(rst),
         .next_pc(next_pc),
         .pc(pc)
-    );
-
-    imem u_imem (
-        .pc(pc),
-        .instr(instr)
     );
 
     decoder u_dec (
@@ -169,14 +173,6 @@ module riscv_top(
         .is_sw(is_sw),
 
         .result(alu_result)
-    );
-
-    dmem u_dm (
-        .clk(clk),
-        .we(is_sw),
-        .addr(alu_result),
-        .wd(rd2),
-        .rd(dmem_out)
     );
 
 endmodule
