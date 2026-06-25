@@ -8,7 +8,9 @@ module riscv_top(
     output dmem_we,
     output [31:0] dmem_addr,
     output [31:0] dmem_wd,
-    input [31:0] dmem_rd
+	input [31:0] dmem_rd,
+
+	output [31:0] alu_out
 );
 
     wire [31:0] pc, next_pc;
@@ -29,6 +31,7 @@ module riscv_top(
     wire reg_we;
 
     assign pc_out = pc;
+	assign alu_out = alu_result;
 
     assign branch_taken = (is_beq  & alu_result[0]) |
                           (is_bne  & alu_result[0]) |
