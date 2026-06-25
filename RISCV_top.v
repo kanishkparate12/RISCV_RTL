@@ -11,7 +11,7 @@ module riscv_top(
     input [31:0] dmem_rd
 );
 
-    wire [31:0] pc, next_pc, alu_out;
+    wire [31:0] pc, next_pc;
     wire [31:0] rd1, rd2, alu_result, imm, wb_data;
     wire [6:0]  opcode, funct7;
     wire [4:0]  rd, rs1, rs2;
